@@ -1,90 +1,94 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width initial-scale=1.0">
-    <title>刮刮卡</title>
-    <style>
-        body {
-            margin: 0;
-        }
 
-        #content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 400px;
-        }
-    </style>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <title>刮刮卡</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    #content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 400px;
+    }
+
+    button {
+      border: 1px solid #d8d8d8;
+    }
+  </style>
 </head>
 
 <body>
-<div id="content">
-    <a href="javascript:void(0)" onClick="location.reload()">再来一次</a>
+  <div id="content">
+    <button onclick="location.reload()">Click Me and Again</button>
     <canvas id="canvas"></canvas>
-</div>
+  </div>
 
-<script type="text/javascript">
+  <script>
     var canvas = document.getElementById('canvas')
 
     var img = new Image()
     var imgs = ['p_0.jpg', 'p_1.jpg']
     var num = Math.floor(Math.random() * 2)
-    img.src = imgs[num]
-
-    canvas.style.backgroundImage = 'url(' + img.src + ')'
+    img.src = 'static/' + imgs[num]
 
     img.addEventListener('load', function () {
-        var w = img.width,
-            h = img.height
-        canvas.width = w
-        canvas.height = h
+      canvas.style.backgroundImage = 'url(' + img.src + ')'
 
-        var ctx = canvas.getContext('2d')
-        ctx.fillStyle = 'gray'
-        ctx.fillRect(0, 0, w, h)
-        ctx.globalCompositeOperation = 'destination-out' //透明覆盖，类似模板效果，只能在 fillRect 之后
+      var w = img.width,
+        h = img.height
+      canvas.width = w
+      canvas.height = h
 
-        var offsetX = canvas.offsetLeft,
-            offsetY = canvas.offsetTop
+      var ctx = canvas.getContext('2d')
+      ctx.fillStyle = 'gray'
+      ctx.fillRect(0, 0, w, h)
+      ctx.globalCompositeOperation = 'destination-out' //透明覆盖，类似模板效果，只能在 fillRect 之后
 
-        var mousedown = false
+      var offsetX = canvas.offsetLeft,
+        offsetY = canvas.offsetTop
 
-        function eventDown(e) {
-            e.preventDefault()
-            mousedown = true
+      var mousedown = false
+
+      function eventDown(e) {
+        e.preventDefault()
+        mousedown = true
+      }
+
+      function eventUp(e) {
+        e.preventDefault()
+        mousedown = false
+      }
+
+      function eventMove(e) {
+        e.preventDefault()
+        var changedTouches = e.changedTouches
+        if (mousedown) {
+          if (changedTouches) {
+            e = changedTouches[changedTouches.length - 1]
+          }
+          var x = (e.clientX + document.body.scrollLeft || e.pageX) - offsetX || 0,
+            y = (e.clientY + document.body.scrollTop || e.pageY) - offsetY || 0
+          ctx.beginPath()
+          ctx.arc(x, y, 24, 0, Math.PI * 2)
+          ctx.fill()
         }
+      }
 
-        function eventUp(e) {
-            e.preventDefault()
-            mousedown = false
-        }
-
-        function eventMove(e) {
-            e.preventDefault()
-            var changedTouches = e.changedTouches
-            if (mousedown) {
-                if (changedTouches) {
-                    e = changedTouches[changedTouches.length - 1]
-                }
-                var x = (e.clientX + document.body.scrollLeft || e.pageX) - offsetX || 0,
-                    y = (e.clientY + document.body.scrollTop || e.pageY) - offsetY || 0
-                with (ctx) {
-                    beginPath()
-                    arc(x, y, 24, 0, Math.PI * 2)
-                    fill()
-                }
-            }
-        }
-
-        canvas.addEventListener('touchstart', eventDown)
-        canvas.addEventListener('touchend', eventUp)
-        canvas.addEventListener('touchmove', eventMove)
-        canvas.addEventListener('mousedown', eventDown)
-        canvas.addEventListener('mouseup', eventUp)
-        canvas.addEventListener('mousemove', eventMove)
+      canvas.addEventListener('touchstart', eventDown)
+      canvas.addEventListener('touchend', eventUp)
+      canvas.addEventListener('touchmove', eventMove)
+      canvas.addEventListener('mousedown', eventDown)
+      canvas.addEventListener('mouseup', eventUp)
+      canvas.addEventListener('mousemove', eventMove)
     })
-</script>
+  </script>
 </body>
+
 </html>
