@@ -31,30 +31,30 @@
   </div>
 
   <script>
-    var canvas = document.getElementById('canvas')
+    let canvas = document.getElementById('canvas')
+    let img = new Image()
+    let imgs = ['p_0.jpg', 'p_1.jpg']
+    let num = Math.floor(Math.random() * 2)
+    img.src = 'assets/' + imgs[num]
 
-    var img = new Image()
-    var imgs = ['p_0.jpg', 'p_1.jpg']
-    var num = Math.floor(Math.random() * 2)
-    img.src = 'static/' + imgs[num]
+    // 加载图片主要是为了获取尺寸
+    img.addEventListener('load', function() {
+      canvas.style.backgroundImage = 'url(assets/' + imgs[num] + ')'
 
-    img.addEventListener('load', function () {
-      canvas.style.backgroundImage = 'url(' + img.src + ')'
-
-      var w = img.width,
-        h = img.height
+      let w = img.width
+      let h = img.height
       canvas.width = w
       canvas.height = h
 
-      var ctx = canvas.getContext('2d')
+      let ctx = canvas.getContext('2d')
       ctx.fillStyle = 'gray'
       ctx.fillRect(0, 0, w, h)
-      ctx.globalCompositeOperation = 'destination-out' //透明覆盖，类似模板效果，只能在 fillRect 之后
+      ctx.globalCompositeOperation = 'destination-out' //只显示旧图形中与新图形不重叠部分，其他部分作透明处理
 
-      var offsetX = canvas.offsetLeft,
-        offsetY = canvas.offsetTop
-
-      var mousedown = false
+      // 计算偏移量
+      let offsetX = canvas.offsetLeft
+      let offsetY = canvas.offsetTop
+      let mousedown = false
 
       function eventDown(e) {
         e.preventDefault()
@@ -68,12 +68,12 @@
 
       function eventMove(e) {
         e.preventDefault()
-        var changedTouches = e.changedTouches
-        if (mousedown) {
-          if (changedTouches) {
+        let changedTouches = e.changedTouches
+        if(mousedown) {
+          if(changedTouches) {
             e = changedTouches[changedTouches.length - 1]
           }
-          var x = (e.clientX + document.body.scrollLeft || e.pageX) - offsetX || 0,
+          let x = (e.clientX + document.body.scrollLeft || e.pageX) - offsetX || 0,
             y = (e.clientY + document.body.scrollTop || e.pageY) - offsetY || 0
           ctx.beginPath()
           ctx.arc(x, y, 24, 0, Math.PI * 2)
